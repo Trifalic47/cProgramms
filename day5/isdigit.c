@@ -20,5 +20,7 @@ int main() {
     printf("Sus input..\n");
   }
 
+  printf("Ascii value: %d\n", character);
+
   return 0;
 }
