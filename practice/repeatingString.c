@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 int main(){
     // Find the character in the string which is the non repeating
 
