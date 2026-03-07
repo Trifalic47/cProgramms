@@ -19,6 +19,7 @@ typedef struct Student {
 void input(int *size,char text[]);
 void studentsInput(Student *arr,int size);
 void printStudents(Student *arr,int size);
+void printTopper(Student *arr,int size);
 
 int main() {
     int size;
@@ -28,7 +29,7 @@ int main() {
     Student *students = malloc(size * sizeof(Student));
     studentsInput(students,size);
     printStudents(students, size);
-
+    printTopper(students,size);
     free(students);
     return 0;
 }
@@ -54,4 +55,18 @@ void printStudents(Student *arr,int size) {
     for (int i = 0; i< size;i++) {
         printf("%d.Name-> %s\tMarks->%d\n",i+1,arr[i].name,arr[i].marks);
     }
+}
+
+
+void printTopper(Student *arr,int size) {
+    int highest = arr[0].marks;
+    int index = -1;
+   for (int i = 0 ;i < size ;i++){
+        if (arr[i].marks > highest) {
+            highest = arr[i].marks;
+            index = i;
+        }
+    }
+    printf("The highest marks in the class are -> %d\n",highest);
+    printf("The topper of the class is -> %s\n",arr[index].name);
 }
