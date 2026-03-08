@@ -8,9 +8,11 @@
     Allocate an array of that size on the heap
     Each student has a name (char array) and a marks (int) — use a struct
     Take input for each student
+    Print the student with the highest marks and his name(topper)
     Print all students
     Free everything
-    */
+*/
+
 typedef struct Student {
     char name[50];
     int marks;

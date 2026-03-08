@@ -1,0 +1,2 @@
+This is an test.txt file.
+On this file we will be doing our file IO operations using C programs
