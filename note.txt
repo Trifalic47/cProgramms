@@ -1,0 +1,2 @@
+After the day17 programms I will start studying the C from another book which is written by Kernighan Ritchie and the book is of second edition.
+So the folder name will remain same but we will jump from the begginer level to the intermediate level.
