@@ -1,0 +1,18 @@
+Man pages to read ->
+
+man 2 open
+man 2 read
+man 2 write
+man 2 execve
+man 3 intro
+man 2 close
+
+Fd's info ->
+stdin -> fd 0
+stdout -> fd 1
+stderr -> fd 2
+
+Header files to use->
+unistd.h
+fcntl.h
+string.h
