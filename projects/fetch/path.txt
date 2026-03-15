@@ -1,0 +1,51 @@
+CUSTOM FETCH - PATH FILE
+=======================
+
+ALLOWED LIBRARIES
+-----------------
+- libc only (stdio.h, stdlib.h, string.h, unistd.h, sys/utsname.h)
+  No ncurses. No libprocps. No external deps whatsoever.
+
+BANNED
+------
+- popen() / system()        → no shell cheating
+- libprocps / proc/libproc  → defeats the whole point
+- ncurses or any TUI lib    → overkill for this
+- getline() if you haven't  → implement manual line reading first, then allow it
+  implemented it once before   as a reward
+
+FILES TO PARSE MANUALLY
+-----------------------
+- /proc/cpuinfo             → extract "model name" field
+- /proc/meminfo             → extract MemTotal, MemAvailable
+- /proc/uptime              → first float = uptime in seconds, convert to h/m/s
+- /etc/os-release           → extract PRETTY_NAME or NAME field
+- /proc/version             → kernel version string (or use uname)
+
+MAN PAGES TO READ (IN ORDER)
+-----------------------------
+1. man 5 proc               → understand the /proc virtual filesystem layout
+2. man 2 uname              → struct utsname: sysname, nodename, release, machine
+3. man 3 fopen              → file opening, modes
+4. man 3 fgets              → line-by-line reading from FILE*
+5. man 3 strstr             → substring search for field matching
+6. man 3 sscanf             → parsing values out of matched lines
+7. man 3 strtok             → tokenizing strings if needed
+8. man 3 printf             → format specifiers, padding for alignment
+
+APPROACH ORDER
+--------------
+1. uname() call first → get hostname + kernel with zero file parsing (warmup)
+2. Parse /etc/os-release → practice strstr + field extraction
+3. Parse /proc/meminfo → two fields, simple math for used = total - available
+4. Parse /proc/cpuinfo → stop at first "model name" line, skip duplicates
+5. Parse /proc/uptime → read one float, write conversion logic (seconds → h:m:s)
+6. Format and print everything cleanly with printf padding
+
+CONSTRAINTS
+-----------
+- Under 150 lines total
+- No global variables
+- Each file gets its own parsing function
+- All FILE* handles must be fclose()'d — no leaks
+- Compile with: gcc -Wall -Wextra -o fetch fetch.c
