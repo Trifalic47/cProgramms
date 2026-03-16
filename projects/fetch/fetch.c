@@ -19,6 +19,7 @@ int main() {
     "model name",
     "mtd"
 };
+    printf("Fetching information about your current system..\n");
     readPath(info,find);
     return 0;
 }
