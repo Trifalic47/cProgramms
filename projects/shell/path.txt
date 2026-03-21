@@ -1,0 +1,70 @@
+SHELL PROJECT — SYSCALLS ONLY
+==============================
+
+WHAT TO USE
+-----------
+- read()        → get input from stdin
+- write()       → print to stdout/stderr
+- fork()        → spawn child process
+- execve()      → replace child with program
+- waitpid()     → wait for child to finish
+- pipe()        → create pipe between processes
+- dup2()        → redirect fd to another fd
+- open()        → open files if needed
+- close()       → close file descriptors
+- exit()        → terminate process
+- chdir()       → implement cd builtin
+- getcwd()      → get current directory for prompt
+
+
+WHAT NOT TO USE
+---------------
+- malloc / free         → no libc allocator
+- printf / scanf        → no formatted I/O
+- fgets / getline       → no stdio
+- system()              → defeats the whole purpose
+- popen()               → same
+- pclose()              → same
+- getenv()              → look it up via /proc/self/environ if needed
+- any <stdio.h> calls   → banned
+- any <stdlib.h> calls  → banned
+- string.h functions    → write your own strlen, strcmp, strcpy
+
+
+BUILD ORDER
+-----------
+1. Read prompt, echo input back (just read + write)
+2. Parse input into argv[] array (split on spaces)
+3. Fork + execve a single command (ls, pwd, etc.)
+4. waitpid so shell doesn't return before child finishes
+5. Loop it — now you have a basic shell
+6. Add builtins: cd, exit, pwd
+7. Add pipe support: cmd1 | cmd2
+
+
+MAN PAGES TO READ (in this order)
+-----------------------------------
+man 2 read
+man 2 write
+man 2 fork
+man 2 execve
+man 2 waitpid
+man 2 pipe
+man 2 dup2
+man 2 open
+man 2 close
+man 2 chdir
+man 3 getcwd       ← or man 2 getcwd on Linux
+man 7 pipe         ← understand pipe semantics deeply
+man 2 exit
+man 5 proc         ← optional, for /proc/self/environ
+
+
+THINGS THAT WILL BITE YOU
+--------------------------
+- execve() needs full path (/bin/ls not ls) — implement PATH lookup manually
+- pipe fd leak if you don't close unused ends — shell will hang
+- zombie processes if waitpid is wrong
+- dup2 order matters — mess it up and wrong fd gets redirected
+- argv must be NULL-terminated
+- envp (3rd arg of execve) — pass current environ or it'll fail silently

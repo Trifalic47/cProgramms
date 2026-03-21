@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <newt.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/utsname.h>
@@ -53,3 +54,4 @@ void readPath(char info[ROWS][COLS],char find[ROWS][COLS]){
         }
     }
 }
+

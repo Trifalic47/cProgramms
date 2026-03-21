@@ -53,8 +53,6 @@ void hex(int decimal) {
         printf("%c",digits[remainders[k]]);
         k--;
     }
-
-
     printf("\n");
 }
 
