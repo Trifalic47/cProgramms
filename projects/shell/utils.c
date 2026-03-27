@@ -44,7 +44,7 @@ void print(const char *msg) {
 int String_Length(char *str) {
     int len=0;
     while(str[len]) len++;
-    return len+1;
+    return len;
 }
 
 void stringCopy(char *dest,char *src) {
@@ -91,4 +91,24 @@ int stringCompare(char *str1, char *str2) {
 void stripNewLine(char *str) {
     int len = String_Length(str);
     if (str[len-2] == '\n') str[len-2] = '\0';
+}
+
+void pkill(int pid) {
+    kill(pid,SIGKILL);
+}
+
+void AP_KILL(int pid,int ppid) {
+    kill(ppid,SIGKILL);
+    kill(pid,SIGKILL);
+}
+
+void string_cat(char *dest,char *src) {
+    int dest_size = String_Length(dest);
+    int src_size = String_Length(src);
+    int i=0;
+    while (i < src_size) {
+        int dest_index = dest_size+i;
+        *(dest + dest_index) = *(src+i);
+        i++;
+    }
 }

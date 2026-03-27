@@ -1,4 +1,6 @@
 #include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
 
 typedef struct Header {
     size_t size;
@@ -17,3 +19,6 @@ void print(const char *msg);
 char* intToString(int i);
 int stringCompare(char *str1,char *str2);
 void stripNewLine(char *str);
+void pkill(int pid);
+void AP_KILL(int pid,int ppid);
+void string_cat(char *dest,char *src);
