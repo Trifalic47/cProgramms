@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <stdlib.h>
+#include <unistd.h>
 
 int main() {
     while (1) {
@@ -13,12 +14,7 @@ int main() {
             } else if (stringCompare(cmd,"") == 0) {
                 stringCopy(cmd,"printf " "");
             } else if (find("|",cmd) == 0) {
-                int pipefd[2];
-                int idx = find_index("|",cmd);
-                char readText[sizeof(cmd)/sizeof(cmd[0])];
-                for (int i = 0;i<idx;i++) {
-                    readText[i] = cmd[i];
-                }
+                execute_pipe_manual(cmd);
                 exit(0);
             }
 

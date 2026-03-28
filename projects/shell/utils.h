@@ -1,6 +1,8 @@
 #include <unistd.h>
-#include <signal.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <stdlib.h>
 
 typedef struct Header {
     size_t size;
@@ -22,5 +24,6 @@ void stripNewLine(char *str);
 void pkill(int pid);
 void AP_KILL(int pid,int ppid);
 void string_cat(char *dest,char *src);
-int find(char *str,char *target);
+int find(char *str, char *target);
 int find_index(char *str,char *target);
+void execute_pipe_manual(char *cmd);

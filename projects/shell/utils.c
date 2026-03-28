@@ -102,30 +102,30 @@ void AP_KILL(int pid,int ppid) {
     kill(pid,SIGKILL);
 }
 
-void string_cat(char *dest,char *src) {
+void string_cat(char *dest, char *src) {
     int dest_size = String_Length(dest);
     int src_size = String_Length(src);
-    int i=0;
+    int i = 0;
     while (i < src_size) {
-        int dest_index = dest_size+i;
-        *(dest + dest_index) = *(src+i);
+        dest[dest_size + i] = src[i];
         i++;
     }
+    dest[dest_size + i] = '\0';
 }
 
 int find(char *str, char *target) {
     int i = 0;
     while (target[i]) {
-        char tempStr[2];    // Space for one char + null terminator
+        char tempStr[2];
         tempStr[0] = target[i];
-        tempStr[1] = '\0';  // Essential: manually add the terminator
+        tempStr[1] = '\0';
 
         if (stringCompare(str, tempStr) == 0) {
-            return 0; // Found it!
+            return 0;
         }
         i++;
     }
-    return -1; // Not found
+    return -1;
 }
 
 int find_index(char *str,char *target) {
@@ -137,4 +137,73 @@ int find_index(char *str,char *target) {
         i++;
     }
     return -1;
+}
+
+void execute_pipe_manual(char *cmd) {
+    int pipefd[2];
+    int idx = find_index("|", cmd);
+    if (idx == -1) return;
+
+    char cmd1_str[256] = {0};
+    char cmd2_str[256] = {0};
+
+    int k = 0;
+    while (k < idx) {
+        cmd1_str[k] = cmd[k];
+        k++;
+    }
+    k--;
+    while (k >= 0 && (cmd1_str[k] == ' ' || cmd1_str[k] == '\t')) {
+        cmd1_str[k] = '\0';
+        k--;
+    }
+    cmd1_str[k + 1] = '\0';
+
+    int j = 0;
+    int start = idx + 1;
+    while (cmd[start] == ' ' || cmd[start] == '\t') start++;
+    for (int i = start; cmd[i] != '\0'; i++) {
+        cmd2_str[j++] = cmd[i];
+    }
+    cmd2_str[j] = '\0';
+
+    if (pipe(pipefd) != 0) {
+        print("Pipe failed\n");
+        return;
+    }
+
+    if (fork() == 0) {
+        dup2(pipefd[1], 1);
+        close(pipefd[0]);
+        close(pipefd[1]);
+
+        char path1[128] = "/usr/bin/";
+        string_cat(path1, cmd1_str);
+
+        char *argv1[] = {path1, NULL};
+        char *envp[] = {NULL};
+
+        execve(path1, argv1, envp);
+        exit(1);
+    }
+
+    if (fork() == 0) {
+        dup2(pipefd[0], 0);
+        close(pipefd[1]);
+        close(pipefd[0]);
+
+        char path2[128] = "/usr/bin/";
+        string_cat(path2, cmd2_str);
+
+        char *argv2[] = {path2, NULL};
+        char *envp[] = {NULL};
+
+        execve(path2, argv2, envp);
+        exit(1);
+    }
+
+    close(pipefd[0]);
+    close(pipefd[1]);
+    wait(NULL);
+    wait(NULL);
 }
