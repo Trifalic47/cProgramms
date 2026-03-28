@@ -112,3 +112,29 @@ void string_cat(char *dest,char *src) {
         i++;
     }
 }
+
+int find(char *str, char *target) {
+    int i = 0;
+    while (target[i]) {
+        char tempStr[2];    // Space for one char + null terminator
+        tempStr[0] = target[i];
+        tempStr[1] = '\0';  // Essential: manually add the terminator
+
+        if (stringCompare(str, tempStr) == 0) {
+            return 0; // Found it!
+        }
+        i++;
+    }
+    return -1; // Not found
+}
+
+int find_index(char *str,char *target) {
+    int i = 0;
+    while (target[i]) {
+        if (str[0] == target[i]) {
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}

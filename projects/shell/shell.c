@@ -1,5 +1,5 @@
 #include "utils.h"
-#include <unistd.h>
+#include <stdlib.h>
 
 int main() {
     while (1) {
@@ -10,7 +10,18 @@ int main() {
             stringInput(cmd);
             if (stringCompare(cmd,"exit") == 0) {
                 AP_KILL(getpid(),getppid());
+            } else if (stringCompare(cmd,"") == 0) {
+                stringCopy(cmd,"printf " "");
+            } else if (find("|",cmd) == 0) {
+                int pipefd[2];
+                int idx = find_index("|",cmd);
+                char readText[sizeof(cmd)/sizeof(cmd[0])];
+                for (int i = 0;i<idx;i++) {
+                    readText[i] = cmd[i];
+                }
+                exit(0);
             }
+
             char cmd_blocks[100][100];
             int word = 0, ch = 0, i = 0;
             while (cmd[i]) {

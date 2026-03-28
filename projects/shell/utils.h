@@ -22,3 +22,5 @@ void stripNewLine(char *str);
 void pkill(int pid);
 void AP_KILL(int pid,int ppid);
 void string_cat(char *dest,char *src);
+int find(char *str,char *target);
+int find_index(char *str,char *target);
