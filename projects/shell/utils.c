@@ -169,7 +169,11 @@ void execute_pipe_manual(char *cmd) {
     char beforeWord[100][100];
     int ch=0,word=0,i=0;
     while (beforePipe[i]) {
-        if (beforePipe[i] == ' ') {
+        if (beforePipe[0] == ' ')  {
+            beforePipe[0] = '\0';
+            i++;
+        }
+        else if (beforePipe[i] == ' ') {
             word++;
             ch = 0;
             i++;
@@ -178,23 +182,56 @@ void execute_pipe_manual(char *cmd) {
             i++;
         }
     }
+    beforeWord[word][ch] = '\0';
+
     char afterWord[100][100];
     int ch1=0,word1=0,i1=0;
     while (afterPipe[i1]) {
-        if (afterPipe[i1] == ' ') {
+        if (afterPipe[0] == ' '){
+        afterPipe[0] = '\0';
+        i1++;
+    }
+        else if (afterPipe[i1] == ' ') {
             word1++;
             ch1 = 0;
             i1++;
-        }else {
+        }
+        else {
             afterWord[word1][ch1++] = afterPipe[i1];
             i1++;
         }
     }
+    afterWord[word1][ch1] = '\0';
 
     if (fork() == 0) {
-        // --- Child Process: beforePipe-----
+        // // --- Child Process: beforePipe-----
         dup2(fd[1],1);
         close(fd[1]);
         close(fd[0]);
+
+        //------------Making argc--------
+        char *args[10];
+        for (int i = 0; i < word; i++) {
+            args[i] = beforeWord[i];
+        }
+        args[word] = NULL;
+        execvp(beforeWord[0],args);
     }
+    if (fork() == 0) {
+        dup2(fd[0],0);
+        close(fd[1]);
+        close(fd[0]);
+
+        char *args[10];
+        for (int i = 0; i < word1; i++) {
+            args[i] = afterWord[i];
+        }
+        args[word1] = NULL;
+        execvp(afterWord[0],args);
+    }
+    //------------Parent Process------
+    close(fd[1]);
+    close(fd[0]);
+    wait(NULL);
+    wait(NULL);
 }
