@@ -202,7 +202,10 @@ void execute_pipe_manual(char *cmd) {
         }
     }
     afterWord[word1][ch1] = '\0';
-
+    print(afterWord[0]);
+    print("\n");
+    print(afterWord[1]);
+    print("\n");
     if (fork() == 0) {
         // // --- Child Process: beforePipe-----
         dup2(fd[1],1);
@@ -223,10 +226,10 @@ void execute_pipe_manual(char *cmd) {
         close(fd[0]);
 
         char *args[10];
-        for (int i = 0; i < word1; i++) {
+        for (int i = 0; i <= word1; i++) {
             args[i] = afterWord[i];
         }
-        args[word1] = NULL;
+        args[word1 + 1] = NULL;
         execvp(afterWord[0],args);
     }
     //------------Parent Process------
