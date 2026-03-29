@@ -139,71 +139,62 @@ int find_index(char *str,char *target) {
     return -1;
 }
 
-void execute_pipe_manual(char *cmd) {
-    int pipefd[2];
-    int idx = find_index("|", cmd);
-    if (idx == -1) return;
 
-    char cmd1_str[256] = {0};
-    char cmd2_str[256] = {0};
+void execute_pipe_manual(char *cmd) {
+    char beforePipe[100];
+    char afterPipe[100];
+    int idx = find_index("|",cmd);
+    for (int i = 0;i < idx;i++) {
+        beforePipe[i] = cmd[i];
+    }
+
+    beforePipe[idx] = '\0';
 
     int k = 0;
-    while (k < idx) {
-        cmd1_str[k] = cmd[k];
+    for (int i = idx+1;i < String_Length(cmd);i++){
+        afterPipe[k] = cmd[i];
         k++;
     }
-    k--;
-    while (k >= 0 && (cmd1_str[k] == ' ' || cmd1_str[k] == '\t')) {
-        cmd1_str[k] = '\0';
-        k--;
-    }
-    cmd1_str[k + 1] = '\0';
+    afterPipe[k] = '\0';
 
-    int j = 0;
-    int start = idx + 1;
-    while (cmd[start] == ' ' || cmd[start] == '\t') start++;
-    for (int i = start; cmd[i] != '\0'; i++) {
-        cmd2_str[j++] = cmd[i];
-    }
-    cmd2_str[j] = '\0';
+    // --- Pipes Logic --------
 
-    if (pipe(pipefd) != 0) {
-        print("Pipe failed\n");
+    int fd[2];
+    if (pipe(fd)!=0) {
+        print("Error while creating pipe");
+        exit(0);
         return;
     }
 
-    if (fork() == 0) {
-        dup2(pipefd[1], 1);
-        close(pipefd[0]);
-        close(pipefd[1]);
-
-        char path1[128] = "/usr/bin/";
-        string_cat(path1, cmd1_str);
-
-        char *argv1[] = {path1, NULL};
-        char *envp[] = {NULL};
-
-        execve(path1, argv1, envp);
-        exit(1);
+    char beforeWord[100][100];
+    int ch=0,word=0,i=0;
+    while (beforePipe[i]) {
+        if (beforePipe[i] == ' ') {
+            word++;
+            ch = 0;
+            i++;
+        }else {
+            beforeWord[word][ch++] = beforePipe[i];
+            i++;
+        }
+    }
+    char afterWord[100][100];
+    int ch1=0,word1=0,i1=0;
+    while (afterPipe[i1]) {
+        if (afterPipe[i1] == ' ') {
+            word1++;
+            ch1 = 0;
+            i1++;
+        }else {
+            afterWord[word1][ch1++] = afterPipe[i1];
+            i1++;
+        }
     }
 
     if (fork() == 0) {
-        dup2(pipefd[0], 0);
-        close(pipefd[1]);
-        close(pipefd[0]);
-
-        char path2[128] = "/usr/bin/";
-        string_cat(path2, cmd2_str);
-
-        char *argv2[] = {path2, NULL};
-        char *envp[] = {NULL};
-
-        execve(path2, argv2, envp);
-        exit(1);
+        // --- Child Process: beforePipe-----
+        dup2(fd[1],1);
+        close(fd[1]);
+        close(fd[0]);
     }
-
-    close(pipefd[0]);
-    close(pipefd[1]);
-    wait(NULL);
-    wait(NULL);
 }
