@@ -71,6 +71,7 @@ int main() {
     } else if (bytes_received == -1) {
         perror("recv failed"); // Handle errors
         }
+    close(client_fd);
     }
 
     close(sock);
